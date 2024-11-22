@@ -15,3 +15,6 @@ TODO(linter):
 
 TODO(builder):
 - Implement using the `sbuild-linter` as library
+
+RFC:
+- Add support for templating in the `linter` and `builder` (go tags?)
