@@ -11,6 +11,7 @@ TODO(linter):
 - Convert into library
 - Preserve input file's whitespace
 - Write unit tests (and make a GH action that runs on every commit against those tests) [badge?]
+- Flags to disable: {shellcheck, creation of .pkgver, creation of .validated}
 
 TODO(builder):
 - Implement using the `sbuild-linter` as library
