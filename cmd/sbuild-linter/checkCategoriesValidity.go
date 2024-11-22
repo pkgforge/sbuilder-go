@@ -9,7 +9,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-//go:embed embedded/categories.txt
+//go:embed embedded/validCategories.list
 var categoriesTXT []byte
 
 func (v *Validator) validateCategories() ([]byte, error, string) {
