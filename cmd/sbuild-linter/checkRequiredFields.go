@@ -26,5 +26,17 @@ func (v *Validator) validateRequiredFields() ([]byte, error, string) {
 			}
 		}
 	}
+
+	// Check for pkgver or x_exec.pkgver
+	if _, pkgverExists := v.data["pkgver"]; !pkgverExists {
+		if xExec, ok := v.data["x_exec"].(map[string]interface{}); ok {
+			if _, pkgverExists := xExec["pkgver"]; !pkgverExists {
+				return nil, fmt.Errorf("pkgver field and x_exec.pkgver script are both missing"), ""
+			}
+		} else {
+			return nil, fmt.Errorf("pkgver field and x_exec.pkgver script are both missing"), ""
+		}
+	}
+
 	return nil, nil, ""
 }

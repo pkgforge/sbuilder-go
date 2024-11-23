@@ -104,7 +104,7 @@ func (v *Validator) editNode(path []string, handler func(*yaml.Node) (bool, erro
 	return data, nil
 }
 
-func (v *Validator) ValidateAll() (validatedData []byte, warningCount int, err error) {
+func (v *Validator) ValidateAll(pkgverFlag bool) (validatedData []byte, warningCount int, err error) {
 	warningCount = 0
 
 	checks := []struct {
@@ -122,8 +122,14 @@ func (v *Validator) ValidateAll() (validatedData []byte, warningCount int, err e
 		{"Categories Validation", v.validateCategories},
 		{"URL Fields Validation", v.validateURLs},
 		{"PKG Id Validation", v.validatePkgID},
-		{"PkgVer Script Validation", v.validateRunScript},
-		{"Run Script Validation", v.validatePkgverScript},
+		{"Run Script Validation", v.validateRunScript},
+	}
+
+	if pkgverFlag {
+		checks = append(checks, struct {
+			name string
+			fn   func() (validatedData []byte, err error, warn string)
+		}{"PkgVer Script Validation", v.validatePkgverScript})
 	}
 
 	for _, check := range checks {

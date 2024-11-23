@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 
@@ -20,7 +21,10 @@ func main() {
 		ReportTimestamp: false,
 	})
 
-	if len(os.Args) < 2 {
+	pkgverFlag := flag.Bool("pkgver", false, "Enable pkgver validation")
+	flag.Parse()
+
+	if flag.NArg() < 1 {
 		Log.Fatal("Usage: sbuild-validator <file1> [<file2> ...]")
 	}
 
@@ -28,7 +32,16 @@ func main() {
 	errorCount := 0
 	successCount := 0
 
-	for _, file := range os.Args[1:] {
+	// Filter out flags from the positional arguments
+	files := make([]string, 0, flag.NArg())
+	for _, arg := range flag.Args() {
+		if arg == "--pkgver" {
+			continue
+		}
+		files = append(files, arg)
+	}
+
+	for _, file := range files {
 		// Print which file is being verified
 		fmt.Printf("\x1b[44m\x1b[30m\x1b[4m[+]\x1b[0m Verifying %s\n", file)
 
@@ -40,9 +53,8 @@ func main() {
 			continue
 		}
 
-		validatedData, warnings, err := validator.ValidateAll()
+		validatedData, warnings, err := validator.ValidateAll(*pkgverFlag)
 		if err != nil {
-			Log.Error(err.Error())
 			Log.Error(errorMessage)
 			errorCount++
 			continue
@@ -50,10 +62,10 @@ func main() {
 
 		// Handle warnings and success separately
 		if warnings > 0 {
-			fmt.Printf("\x1b[43m\x1b[30m\x1b[4m[!]\x1b[0m %s has %d warnings\n", file, warnings)
+			fmt.Printf("[!] %s has %d warnings\n", file, warnings)
 			warningCount++
 		} else {
-			fmt.Printf("\x1b[42m\x1b[30m\x1b[4m[✓]\x1b[0m %s is valid\n", file)
+			fmt.Printf("[✓] %s is valid\n", file)
 			successCount++
 		}
 		println()
@@ -63,9 +75,8 @@ func main() {
 			errorCount++
 			continue
 		}
-
-		Log.Info("Validation completed", "file", file, "warnings", warnings)
 		println()
+
 	}
 
 	// Print summary statistics

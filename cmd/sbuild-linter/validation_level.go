@@ -24,3 +24,7 @@ func (v *ValidationLevel) LogWarn(checkname string, warn string) {
 func (v *ValidationLevel) LogSuccess(checkname, msg string) {
 	fmt.Fprintf(os.Stderr, "[+] %s succeeded\n", checkname)
 }
+
+func (v *ValidationLevel) LogInfo(msg string) {
+	fmt.Fprintf(os.Stderr, "[i] %s\n", msg)
+}
