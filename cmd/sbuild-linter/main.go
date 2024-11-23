@@ -22,6 +22,7 @@ func main() {
 	})
 
 	pkgverFlag := flag.Bool("pkgver", false, "Enable pkgver validation")
+	noShellcheckFlag := flag.Bool("no-shellcheck", false, "Disables shellcheck usage in pkgver & run script validation")
 	flag.Parse()
 
 	if flag.NArg() < 1 {
@@ -53,7 +54,7 @@ func main() {
 			continue
 		}
 
-		validatedData, warnings, err := validator.ValidateAll(*pkgverFlag)
+		validatedData, warnings, err := validator.ValidateAll(*pkgverFlag, *noShellcheckFlag)
 		if err != nil {
 			Log.Error(errorMessage)
 			errorCount++

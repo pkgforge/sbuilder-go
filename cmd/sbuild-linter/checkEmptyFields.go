@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"strings"
-
-	"gopkg.in/yaml.v3"
 )
 
 func (v *Validator) validateNoEmptyFields() ([]byte, error, string) {
@@ -77,11 +75,9 @@ func (v *Validator) validateNoEmptyFields() ([]byte, error, string) {
 	}
 
 	if warn != "" {
-		data, err := v.editNode([]string{}, func(node *yaml.Node) (bool, error) {
-			return true, nil
-		})
+		data, err := v.updateField([]string{}, v.data)
 		if err != nil {
-			return nil, fmt.Errorf("failed to edit node: %w", err), ""
+			return nil, fmt.Errorf("failed to update field: %w", err), ""
 		}
 		return data, nil, warn
 	}

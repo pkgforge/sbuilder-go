@@ -58,7 +58,7 @@ func (v *Validator) updateFields() error {
 	return nil
 }
 
-func (v *Validator) editNode(path []string, handler func(*yaml.Node) (bool, error)) ([]byte, error) {
+func (v *Validator) updateField(path []string, value interface{}) ([]byte, error) {
 	var navigate func(*yaml.Node, []string) (*yaml.Node, error)
 	navigate = func(n *yaml.Node, remainingPath []string) (*yaml.Node, error) {
 		if len(remainingPath) == 0 {
@@ -71,24 +71,25 @@ func (v *Validator) editNode(path []string, handler func(*yaml.Node) (bool, erro
 
 		for i := 0; i < len(n.Content); i += 2 {
 			if n.Content[i].Value == remainingPath[0] {
+				if len(remainingPath) == 1 {
+					// Update the field
+					n.Content[i+1].Value = fmt.Sprintf("%v", value)
+					return n, nil
+				}
 				return navigate(n.Content[i+1], remainingPath[1:])
 			}
 		}
-		return nil, fmt.Errorf("path %v not found", path)
+
+		// Create the field if it doesn't exist
+		newKey := &yaml.Node{Kind: yaml.ScalarNode, Value: remainingPath[0]}
+		newValue := &yaml.Node{Kind: yaml.ScalarNode, Value: fmt.Sprintf("%v", value)}
+		n.Content = append(n.Content, newKey, newValue)
+		return newValue, nil
 	}
 
-	targetNode, err := navigate(v.node, path)
+	_, err := navigate(v.node, path)
 	if err != nil {
 		return nil, err
-	}
-
-	modified, err := handler(targetNode)
-	if err != nil {
-		return nil, err
-	}
-
-	if !modified {
-		return nil, nil
 	}
 
 	data, err := yaml.Marshal(v.node)
@@ -104,7 +105,7 @@ func (v *Validator) editNode(path []string, handler func(*yaml.Node) (bool, erro
 	return data, nil
 }
 
-func (v *Validator) ValidateAll(pkgverFlag bool) (validatedData []byte, warningCount int, err error) {
+func (v *Validator) ValidateAll(pkgverFlag, noShellcheckFlag bool) (validatedData []byte, warningCount int, err error) {
 	warningCount = 0
 
 	checks := []struct {
@@ -122,14 +123,18 @@ func (v *Validator) ValidateAll(pkgverFlag bool) (validatedData []byte, warningC
 		{"Categories Validation", v.validateCategories},
 		{"URL Fields Validation", v.validateURLs},
 		{"PKG Id Validation", v.validatePkgID},
-		{"Run Script Validation", v.validateRunScript},
 	}
+
+	checks = append(checks, struct {
+		name string
+		fn   func() (validatedData []byte, err error, warn string)
+	}{"Run Script Validation", func() ([]byte, error, string) { return v.validateRunScript(noShellcheckFlag) }})
 
 	if pkgverFlag {
 		checks = append(checks, struct {
 			name string
 			fn   func() (validatedData []byte, err error, warn string)
-		}{"PkgVer Script Validation", v.validatePkgverScript})
+		}{"PkgVer Script Validation", func() ([]byte, error, string) { return v.validatePkgverScript(noShellcheckFlag) }})
 	}
 
 	for _, check := range checks {

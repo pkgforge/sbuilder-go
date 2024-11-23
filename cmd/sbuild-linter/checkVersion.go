@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func (v *Validator) validatePkgverScript() ([]byte, error, string) {
+func (v *Validator) validatePkgverScript(noShellcheck bool) ([]byte, error, string) {
 	var version string
 	var source string
 	var warning string
@@ -20,9 +20,15 @@ func (v *Validator) validatePkgverScript() ([]byte, error, string) {
 				return nil, fmt.Errorf("pkgver script is empty"), ""
 			}
 
-			validShell, err, warning := v.validateScript(script, shell)
-			if err != nil {
-				return nil, err, warning
+			validShell, warning := "", ""
+			var err error
+			if noShellcheck {
+				warning = "shellcheck for x_exec.pkgver skipped"
+			} else {
+				validShell, err, warning = v.validateScript(script, shell)
+				if err != nil {
+					return nil, err, warning
+				}
 			}
 
 			// Execute pkgver script
@@ -65,4 +71,3 @@ func (v *Validator) validatePkgverScript() ([]byte, error, string) {
 
 	return nil, nil, warning
 }
-

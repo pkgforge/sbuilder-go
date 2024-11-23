@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"gopkg.in/yaml.v3"
 	"net/url"
 	"regexp"
 	"strings"
@@ -66,47 +65,11 @@ func (v *Validator) validatePkgID() ([]byte, error, string) {
 		return nil, fmt.Errorf("generated pkg_id can only contain alphabets, digits, and the following special characters: + - _ ."), ""
 	}
 
-	// Parse the existing YAML to preserve structure
-	var root yaml.Node
-	if err := yaml.Unmarshal(v.raw, &root); err != nil {
-		return nil, fmt.Errorf("failed to parse YAML: %w", err), ""
+	// Update the pkg_id field using updateField
+	updatedData, err := v.updateField([]string{"pkg_id"}, pkgID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to update field: %w", err), ""
 	}
 
-	// Find the pkg field and insert pkg_id after it
-	if len(root.Content) > 0 && root.Content[0].Kind == yaml.MappingNode {
-		mapping := root.Content[0]
-		for i := 0; i < len(mapping.Content); i += 2 {
-			if mapping.Content[i].Value == "pkg" {
-				// Create pkg_id nodes
-				pkgIDKey := &yaml.Node{
-					Kind:  yaml.ScalarNode,
-					Tag:   "!!str",
-					Value: "pkg_id",
-				}
-				pkgIDValue := &yaml.Node{
-					Kind:  yaml.ScalarNode,
-					Tag:   "!!str",
-					Value: pkgID,
-					Style: yaml.DoubleQuotedStyle,
-				}
-
-				// Insert pkg_id nodes right after pkg
-				newContent := make([]*yaml.Node, 0, len(mapping.Content)+2)
-				newContent = append(newContent, mapping.Content[:i+2]...)
-				newContent = append(newContent, pkgIDKey, pkgIDValue)
-				newContent = append(newContent, mapping.Content[i+2:]...)
-				mapping.Content = newContent
-
-				// Marshal the modified YAML
-				modifiedYAML, err := yaml.Marshal(&root)
-				if err != nil {
-					return nil, fmt.Errorf("failed to marshal YAML: %w", err), ""
-				}
-				return modifiedYAML, nil, ""
-			}
-		}
-		return nil, fmt.Errorf("pkg field not found"), ""
-	}
-
-	return nil, fmt.Errorf("invalid YAML structure"), ""
+	return updatedData, nil, ""
 }

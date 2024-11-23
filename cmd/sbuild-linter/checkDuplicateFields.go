@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"gopkg.in/yaml.v3"
 	"strings"
 )
 
@@ -50,11 +49,9 @@ func (v *Validator) validateNoDuplicates() ([]byte, error, string) {
 	_, warnings := checkDupes(v.data, "root", seen)
 	if len(warnings) > 0 {
 		v.data = removeDuplicates(v.data).(map[string]interface{})
-		data, err := v.editNode([]string{}, func(node *yaml.Node) (bool, error) {
-			return true, nil
-		})
+		data, err := v.updateField([]string{}, v.data)
 		if err != nil {
-			return nil, fmt.Errorf("failed to edit node: %w", err), ""
+			return nil, fmt.Errorf("failed to update field: %w", err), ""
 		}
 		return data, nil, strings.Join(warnings, ", ")
 	}

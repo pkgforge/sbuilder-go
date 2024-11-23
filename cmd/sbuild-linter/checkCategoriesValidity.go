@@ -5,8 +5,6 @@ import (
 	_ "embed"
 	"fmt"
 	"strings"
-
-	"gopkg.in/yaml.v3"
 )
 
 //go:embed embedded/validCategories.list
@@ -68,12 +66,9 @@ func (v *Validator) validateCategories() ([]byte, error, string) {
 
 	// Apply the default category if needed and issue a warning.
 	if warn != "" {
-		data, err := v.editNode([]string{"category"}, func(node *yaml.Node) (bool, error) {
-			node.Value = "Utility"
-			return true, nil
-		})
+		data, err := v.updateField([]string{"category"}, "Utility")
 		if err != nil {
-			return nil, fmt.Errorf("failed to edit node: %w", err), ""
+			return nil, fmt.Errorf("failed to update field: %w", err), ""
 		}
 		return data, nil, warn
 	}
