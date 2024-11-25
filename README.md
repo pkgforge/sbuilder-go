@@ -8,10 +8,14 @@ The linter will produce: `{{ yourRecipe }}.validated` and a `{{ yourRecipe }}.pk
 
 
 TODO(linter):
+- Switch to using "github.com/goccy/go-yaml"
 - Convert into library
 - Preserve input file's whitespace
+- Use AnnotateSource to print errors and warnings
 - Write unit tests (and make a GH action that runs on every commit against those tests) [badge?]
-- Flags to disable: {shellcheck, creation of .pkgver, creation of .validated}
+- Flags to disable creation of .validated
+- Print time it took to validate each file
+- Parallel mode?
 
 TODO(builder):
 - Implement using the `sbuild-linter` as library
