@@ -11,7 +11,7 @@ TODO(linter):
 - Switch to using "github.com/goccy/go-yaml"
 - Convert into library
 - Preserve input file's whitespace
-- Use AnnotateSource to print errors and warnings
+- Use AnnotateSource to print errors and warnings that show the user specifically what line is wrong
 - Write unit tests (and make a GH action that runs on every commit against those tests) [badge?]
 - Flags to disable creation of .validated
 - Print time it took to validate each file
