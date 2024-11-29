@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/charmbracelet/log"
+	"github.com/pkgforge/sbuilder-go/validator"
 )
 
 var Log *log.Logger
@@ -46,7 +47,7 @@ func main() {
 		// Print which file is being verified
 		fmt.Printf("\x1b[44m\x1b[30m\x1b[4m[+]\x1b[0m Verifying %s\n", file)
 
-		validator, err := NewValidator(file)
+		validator, err := validator.NewValidator(file)
 		if err != nil {
 			Log.Error(err.Error())
 			Log.Error(errorMessage)
@@ -90,4 +91,16 @@ func main() {
 	if errorCount > 0 {
 		os.Exit(1)
 	}
+}
+
+func writeDataToNewFile(originalFile string, data []byte) error {
+	//newFile := filepath.Base(originalFile) + ".validated"
+	newFile := originalFile + ".validated"
+	err := os.WriteFile(newFile, data, 0644)
+	if err != nil {
+		Log.Error("Failed to write processed data to new file", "file", newFile, "error", err)
+		return err
+	}
+	Log.Info("Processed data written to new file", "file", newFile)
+	return nil
 }
