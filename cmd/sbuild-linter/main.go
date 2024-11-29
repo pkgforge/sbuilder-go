@@ -5,11 +5,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/charmbracelet/log"
+	"github.com/pkgforge/sbuilder-go/logger"
 	"github.com/pkgforge/sbuilder-go/validator"
 )
-
-var Log *log.Logger
 
 const errorMessage = `incorrect SBUILD File. Please recheck @ https://www.yamllint.com
   SBUILD docs: https://github.com/pkgforge/soarpkgs/blob/main/SBUILD.md
@@ -17,17 +15,12 @@ const errorMessage = `incorrect SBUILD File. Please recheck @ https://www.yamlli
 `
 
 func main() {
-	Log = log.NewWithOptions(os.Stderr, log.Options{
-		ReportCaller:    false,
-		ReportTimestamp: false,
-	})
-
 	pkgverFlag := flag.Bool("pkgver", false, "Enable pkgver validation")
 	noShellcheckFlag := flag.Bool("no-shellcheck", false, "Disables shellcheck usage in pkgver & run script validation")
 	flag.Parse()
 
 	if flag.NArg() < 1 {
-		Log.Fatal("Usage: sbuild-validator <file1> [<file2> ...]")
+		logger.Log.Fatal("Usage: sbuild-validator <file1> [<file2> ...]")
 	}
 
 	warningCount := 0
@@ -49,15 +42,15 @@ func main() {
 
 		validator, err := validator.NewValidator(file)
 		if err != nil {
-			Log.Error(err.Error())
-			Log.Error(errorMessage)
+			logger.Log.Error(err.Error())
+			logger.Log.Error(errorMessage)
 			errorCount++
 			continue
 		}
 
 		validatedData, warnings, err := validator.ValidateAll(*pkgverFlag, *noShellcheckFlag)
 		if err != nil {
-			Log.Error(errorMessage)
+			logger.Log.Error(errorMessage)
 			errorCount++
 			continue
 		}
@@ -73,7 +66,7 @@ func main() {
 		println()
 
 		if err := writeDataToNewFile(file, validatedData); err != nil {
-			Log.Error("Failed to write validated data", "file", file, "error", err)
+			logger.Log.Error("Failed to write validated data", "file", file, "error", err)
 			errorCount++
 			continue
 		}
@@ -98,9 +91,9 @@ func writeDataToNewFile(originalFile string, data []byte) error {
 	newFile := originalFile + ".validated"
 	err := os.WriteFile(newFile, data, 0644)
 	if err != nil {
-		Log.Error("Failed to write processed data to new file", "file", newFile, "error", err)
+		logger.Log.Error("Failed to write processed data to new file", "file", newFile, "error", err)
 		return err
 	}
-	Log.Info("Processed data written to new file", "file", newFile)
+	logger.Log.Info("Processed data written to new file", "file", newFile)
 	return nil
 }
