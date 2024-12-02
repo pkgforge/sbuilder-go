@@ -1,4 +1,4 @@
-package validator
+package linter
 
 import (
 	"bufio"

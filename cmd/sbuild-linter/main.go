@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/pkgforge/sbuilder-go/logger"
-	"github.com/pkgforge/sbuilder-go/validator"
+	"github.com/pkgforge/sbuilder-go/pkg/linter"
+	"github.com/pkgforge/sbuilder-go/pkg/logger"
 )
 
 const errorMessage = `incorrect SBUILD File. Please recheck @ https://www.yamllint.com
@@ -40,7 +40,7 @@ func main() {
 		// Print which file is being verified
 		fmt.Printf("\x1b[44m\x1b[30m\x1b[4m[+]\x1b[0m Verifying %s\n", file)
 
-		validator, err := validator.NewValidator(file)
+		validator, err := linter.NewValidator(file)
 		if err != nil {
 			logger.Log.Error(err.Error())
 			logger.Log.Error(errorMessage)

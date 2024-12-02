@@ -1,10 +1,10 @@
-package validator
+package linter
 
 import (
 	"fmt"
 	"os"
 
-	"github.com/pkgforge/sbuilder-go/logger"
+	"github.com/pkgforge/sbuilder-go/pkg/logger"
 	"gopkg.in/yaml.v3"
 )
 
