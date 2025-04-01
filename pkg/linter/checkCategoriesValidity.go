@@ -47,26 +47,24 @@ func (v *Validator) validateCategories() ([]byte, error, string) {
 				return nil, fmt.Errorf("invalid category type in array"), ""
 			}
 		}
+
 	case []string:
-		categories = val
-	default:
-		return nil, fmt.Errorf("unsupported category format"), ""
-	}
+ 		categories = val
+ 	case nil:
+ 		data, err := v.updateField([]string{"category"}, []string{"Utility"})
+		if err != nil {
+			return nil, fmt.Errorf("failed to update field: %w", err), ""
+		}
+		return data, nil, warn
+ 	default:
+ 		return nil, fmt.Errorf("unsupported category format"), ""
+ 	}
 
 	// Validate user-provided categories against the allowed categories.
 	for _, cat := range categories {
 		if _, exists := allowedCategories[cat]; !exists {
 			return nil, fmt.Errorf("invalid category: %s", cat), ""
 		}
-	}
-
-	// Apply the default category if needed and issue a warning.
-	if warn != "" {
-		data, err := v.updateField([]string{"category"}, []string{"Utility"})
-		if err != nil {
-			return nil, fmt.Errorf("failed to update field: %w", err), ""
-		}
-		return data, nil, warn
 	}
 
 	return nil, nil, ""

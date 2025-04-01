@@ -15,7 +15,12 @@ func (v *Validator) validateNoEmptyFields() ([]byte, error, string) {
 		case map[string]interface{}:
 			m2 := make(map[string]interface{})
 			for k, v := range x {
-				newPath := fmt.Sprintf("%s.%s", path, k)
+				newPath := path
+				if path != "" {
+					newPath = fmt.Sprintf("%s.%s", path, k)
+				} else {
+					newPath = k
+				}
 				if v == nil || v == "" {
 					emptyFields = append(emptyFields, newPath)
 				} else {
@@ -75,7 +80,7 @@ func (v *Validator) validateNoEmptyFields() ([]byte, error, string) {
 	}
 
 	if warn != "" {
-		data, err := v.updateField([]string{}, v.data)
+		data, err := v.updateField(nil, v.data)
 		if err != nil {
 			return nil, fmt.Errorf("failed to update field: %w", err), ""
 		}
