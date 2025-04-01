@@ -36,13 +36,11 @@ func (v *Validator) validateCategories() ([]byte, error, string) {
 
 	// Extract user-provided categories.
 	var categories []string
-	switch v := categoryField.(type) {
+	switch val := categoryField.(type) {
 	case string:
-		// Split by comma for multiple categories.
-		categories = strings.Split(v, ",")
+		categories = strings.Split(val, ",")
 	case []interface{}:
-		// Convert array of interfaces to array of strings.
-		for _, cat := range v {
+		for _, cat := range val {
 			if catStr, ok := cat.(string); ok {
 				categories = append(categories, catStr)
 			} else {
@@ -50,9 +48,7 @@ func (v *Validator) validateCategories() ([]byte, error, string) {
 			}
 		}
 	case []string:
-		categories = v
-	case nil:
-		categories = []string{"Utility"}
+		categories = val
 	default:
 		return nil, fmt.Errorf("unsupported category format"), ""
 	}
@@ -66,7 +62,7 @@ func (v *Validator) validateCategories() ([]byte, error, string) {
 
 	// Apply the default category if needed and issue a warning.
 	if warn != "" {
-		data, err := v.updateField([]string{"category"}, "Utility")
+		data, err := v.updateField([]string{"category"}, []string{"Utility"})
 		if err != nil {
 			return nil, fmt.Errorf("failed to update field: %w", err), ""
 		}
@@ -75,3 +71,4 @@ func (v *Validator) validateCategories() ([]byte, error, string) {
 
 	return nil, nil, ""
 }
+

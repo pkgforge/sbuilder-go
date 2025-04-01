@@ -5,11 +5,12 @@ import (
 )
 
 func (v *Validator) validateDisabledField() ([]byte, error, string) {
-	if _, ok := v.data["_disabled"]; !ok {
+	disabled, exists := v.data["_disabled"]
+	if !exists {
 		return nil, fmt.Errorf("_disabled field does not exist"), ""
 	}
 
-	if _, ok := v.data["_disabled"].(bool); !ok {
+	if _, ok := disabled.(bool); !ok {
 		return nil, fmt.Errorf("_disabled field must be a boolean"), ""
 	}
 

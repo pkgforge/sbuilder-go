@@ -73,7 +73,6 @@ func (v *Validator) updateField(path []string, value interface{}) ([]byte, error
 		for i := 0; i < len(n.Content); i += 2 {
 			if n.Content[i].Value == remainingPath[0] {
 				if len(remainingPath) == 1 {
-					// Update the field
 					n.Content[i+1].Value = fmt.Sprintf("%v", value)
 					return n, nil
 				}
@@ -81,7 +80,6 @@ func (v *Validator) updateField(path []string, value interface{}) ([]byte, error
 			}
 		}
 
-		// Create the field if it doesn't exist
 		newKey := &yaml.Node{Kind: yaml.ScalarNode, Value: remainingPath[0]}
 		newValue := &yaml.Node{Kind: yaml.ScalarNode, Value: fmt.Sprintf("%v", value)}
 		n.Content = append(n.Content, newKey, newValue)
@@ -124,12 +122,8 @@ func (v *Validator) ValidateAll(pkgverFlag, noShellcheckFlag bool) (validatedDat
 		{"Categories Validation", v.validateCategories},
 		{"URL Fields Validation", v.validateURLs},
 		{"PKG Id Validation", v.validatePkgID},
+		{"Run Script Validation", func() ([]byte, error, string) { return v.validateRunScript(noShellcheckFlag) }},
 	}
-
-	checks = append(checks, struct {
-		name string
-		fn   func() (validatedData []byte, err error, warn string)
-	}{"Run Script Validation", func() ([]byte, error, string) { return v.validateRunScript(noShellcheckFlag) }})
 
 	if pkgverFlag {
 		checks = append(checks, struct {

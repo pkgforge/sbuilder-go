@@ -6,7 +6,6 @@ import (
 	"os/exec"
 )
 
-// validateScript handles the common validation logic for shell scripts
 func (v *Validator) validateScript(script string, shell string) (string, error, string) {
 	var shebang string
 	if shell != "" && shell != "sh" {
@@ -16,21 +15,18 @@ func (v *Validator) validateScript(script string, shell string) (string, error, 
 		shebang = "#!/bin/sh"
 	}
 
-	// Check if interpreter exists
 	if _, err := exec.LookPath(shell); err != nil {
 		return "", fmt.Errorf("interpreter (%s) not found in $PATH", shell), ""
 	}
 
 	fullScript := shebang + "\n" + script
 
-	// Create temporary file
 	tmpFile, err := os.CreateTemp("", "shellcheck-*")
 	if err != nil {
 		return "", fmt.Errorf("failed to create temp file: %w", err), ""
 	}
 	defer os.Remove(tmpFile.Name())
 
-	// Write script to temp file
 	if _, err := tmpFile.WriteString(fullScript); err != nil {
 		return "", fmt.Errorf("failed to write script: %w", err), ""
 	}

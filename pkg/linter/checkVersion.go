@@ -31,7 +31,6 @@ func (v *Validator) validatePkgverScript(noShellcheck bool) ([]byte, error, stri
 				}
 			}
 
-			// Execute pkgver script
 			cmd := exec.Command(validShell, "-c", script)
 			output, err := cmd.CombinedOutput()
 			if err != nil {
@@ -49,7 +48,6 @@ func (v *Validator) validatePkgverScript(noShellcheck bool) ([]byte, error, stri
 				return nil, fmt.Errorf("pkgver script returned an empty version"), warning
 			}
 
-			// Write output to pkgver file
 			if err := os.WriteFile(v.file+".pkgver", output, 0644); err != nil {
 				return nil, fmt.Errorf("failed to write pkgver file: %w", err), warning
 			}
