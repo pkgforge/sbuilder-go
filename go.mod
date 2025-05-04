@@ -5,7 +5,7 @@ go 1.23.2
 require (
 	github.com/charmbracelet/log v0.4.1
 	github.com/goccy/go-yaml v1.17.1
-	github.com/mikefarah/yq/v4 v4.45.1
+	github.com/mikefarah/yq/v4 v4.45.2
 )
 
 require (
@@ -25,5 +25,5 @@ require (
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	golang.org/x/exp v0.0.0-20250305212735-054e65f0b394 // indirect
-	golang.org/x/sys v0.31.0 // indirect
+	golang.org/x/sys v0.32.0 // indirect
 )
