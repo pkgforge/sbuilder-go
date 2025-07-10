@@ -5,7 +5,7 @@ go 1.23.2
 require (
 	github.com/charmbracelet/log v0.4.1
 	github.com/goccy/go-yaml v1.18.0
-	github.com/mikefarah/yq/v4 v4.45.2
+	github.com/mikefarah/yq/v4 v4.46.1
 )
 
 require (
