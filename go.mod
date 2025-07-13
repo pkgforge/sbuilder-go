@@ -3,7 +3,7 @@ module github.com/pkgforge/sbuilder-go
 go 1.23.2
 
 require (
-	github.com/charmbracelet/log v0.4.1
+	github.com/charmbracelet/log v0.4.2
 	github.com/goccy/go-yaml v1.18.0
 	github.com/mikefarah/yq/v4 v4.45.2
 )
